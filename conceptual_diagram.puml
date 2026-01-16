@@ -1,0 +1,49 @@
+@startuml
+!theme plain
+skinparam componentStyle rectangle
+
+title Bankovní Server
+
+node "Klientská zóna" {
+    [PuTTY / Telnet Client] as Client
+}
+
+node "Bankovní Server (Node.js)" {
+
+    component "TCP Server (net module) - event loop" as NetLayer
+    component "Command Processor" as Logic
+    component "Config Manager" as Config
+    component "Log Manager (Winston)" as Logger
+    component "FileSystem Provider (fs/promises)" as FS
+
+    database "Account Storage" as Storage {
+        [Account Files (*.txt)]
+    }
+}
+
+file "app_config.json" as ConfigFile
+file "bank.log" as LogFile
+
+' Vztahy
+Client --> NetLayer : TCP/IP (Raw Text utf8)
+NetLayer <--> Logic : Stream dat
+Logic --> Config : Načítá timeouty/port
+Config ..> ConfigFile : Čte JSON
+
+Logic --> FS : CRUD operace účtů
+FS <--> Storage : Čtení/Zápis balance
+
+Logic --> Logger : Loguje události
+Logger ..> LogFile : Rotující zápis
+
+note right of Logic
+  Zpracovává příkazy:
+  BC, AC, AD, AW, AB, AR, BA, BN
+end note
+
+note bottom of Logger
+  Log Rotation:
+  Max size, Max files, Daily rotate
+end note
+
+@enduml
