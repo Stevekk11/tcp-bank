@@ -2,3 +2,4 @@ https://gemini.google.com/share/1e571f77012b
 https://moodle.spsejecna.cz/mod/page/view.php?id=11554
 https://gist.github.com/tedmiston/5935757
 https://nodejs.org/api/net.html
+F:\Škola\Pv\Cviceni-3-4

@@ -5,6 +5,9 @@ import path from 'node:path';
 import { Logger } from 'winston';
 import { NetworkMonitor } from './NetworkMonitor.js';
 
+/**
+ * Kontext příkazu obsahující potřebné informace pro jeho vykonání.
+ */
 export interface CommandContext {
     socket: net.Socket;
     args: string[];
@@ -26,6 +29,10 @@ export class BankCodeCommand implements Command {
     }
 }
 
+/**
+ * Příkaz pro vytvoření nového bankovního účtu.
+ * Generuje náhodné pětimístné číslo účtu a ukládá ho do souboru.
+ */
 export class AccountCreateCommand implements Command {
     async execute(ctx: CommandContext): Promise<void> {
         const { socket, bankCode, getPath, remoteInfo, logger } = ctx;
@@ -41,6 +48,9 @@ export class AccountCreateCommand implements Command {
     }
 }
 
+/**
+ * Příkaz pro provedení transakce (vklad nebo výběr).
+ */
 export class TransactionCommand implements Command {
     constructor(private type: 'AD' | 'AW') {}
 
@@ -71,6 +81,9 @@ export class TransactionCommand implements Command {
     }
 }
 
+/**
+ * Příkaz pro získání zůstatku na účtu.
+ */
 export class BalanceCommand implements Command {
     async execute(ctx: CommandContext): Promise<void> {
         const { socket, args, getPath } = ctx;
@@ -86,6 +99,10 @@ export class BalanceCommand implements Command {
     }
 }
 
+/**
+ * Příkaz pro odstranění bankovního účtu.
+ * Účet může být odstraněn pouze pokud je jeho zůstatek nulový.
+ */
 export class RemoveCommand implements Command {
     async execute(ctx: CommandContext): Promise<void> {
         const { socket, args, getPath, logger } = ctx;
@@ -107,6 +124,9 @@ export class RemoveCommand implements Command {
     }
 }
 
+/**
+ * Příkaz pro získání celkové částky ve všech bankovních účtech.
+ */
 export class BankAmountCommand implements Command {
     async execute(ctx: CommandContext): Promise<void> {
         const { socket, CONFIG } = ctx;
@@ -119,6 +139,9 @@ export class BankAmountCommand implements Command {
     }
 }
 
+/**
+ * Příkaz pro získání počtu klientů banky.
+ */
 export class BankClientsCommand implements Command {
     async execute(ctx: CommandContext): Promise<void> {
         const { socket, CONFIG } = ctx;
@@ -127,11 +150,14 @@ export class BankClientsCommand implements Command {
     }
 }
 
+/**
+ * Příkaz pro ukončení spojení klienta.
+ */
 export class ExitCommand implements Command {
     async execute(ctx: CommandContext): Promise<void> {
-        const { socket, networkMonitor, logger, remoteInfo } = ctx;
+        const { socket, logger, remoteInfo } = ctx;
         socket.write(`OK Goodbye\r\n`);
-        networkMonitor.stopMonitoring();
+        //networkMonitor.stopMonitoring();
         logger.info(`Klient ${remoteInfo} ukončil spojení.`);
         socket.end();
     }

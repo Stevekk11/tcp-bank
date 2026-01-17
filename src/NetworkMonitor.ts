@@ -1,6 +1,11 @@
 import os from 'node:os';
 import { Logger } from 'winston';
 
+/**
+ * Třída pro monitorování síťového připojení.
+ * Pokud není detekováno žádné aktivní síťové rozhraní kromě localhost,
+ * vyvolá varování do logu a blokuje příkazy v main..
+ */
 export class NetworkMonitor {
     private logger: Logger;
     private checkInterval: number;
@@ -50,6 +55,9 @@ export class NetworkMonitor {
         this.logger.info(`Sledování sítě spuštěno (interval ${this.checkInterval / 1000}s).`);
     }
 
+    /**
+     * Zastaví automatickou periodickou kontrolu.
+     */
     public stopMonitoring() {
         if (this.timer) {
             this.logger.info(`Sledování sítě zastaveno.`);
