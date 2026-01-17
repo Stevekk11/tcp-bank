@@ -1,5 +1,6 @@
-import os from 'node:os';
+
 import { Logger } from 'winston';
+import {execSync} from "node:child_process";
 
 /**
  * Třída pro monitorování síťového připojení.
@@ -10,6 +11,7 @@ export class NetworkMonitor {
     private logger: Logger;
     private checkInterval: number;
     private timer: NodeJS.Timeout | null = null;
+    private isConnected: boolean = true;
 
     constructor(logger: Logger, checkIntervalMs: number = 30000) {
         this.logger = logger;
@@ -21,29 +23,28 @@ export class NetworkMonitor {
      * Pokud nenajde žádné aktivní rozhraní kromě localhost, vyvolá varování.
      */
     public checkConnection(): boolean {
-        const interfaces = os.networkInterfaces();
-        let isConnected = false;
+        try {
 
-        for (const name of Object.keys(interfaces)) {
-            const networkInterface = interfaces[name];
-            if (!networkInterface) continue;
+            const stdout = execSync('route print -4 0.0.0.0').toString();
 
-            for (const iface of networkInterface) {
-                // Hledáme IPv4 rozhraní, které není interní (loopback/127.0.0.1)
-                // a je "up" (pokud to OS podporuje)
-                if (iface.family === 'IPv4' && !iface.internal) {
-                    isConnected = true;
-                    break;
-                }
+            const found = stdout.includes('0.0.0.0');
+
+            if (!found && this.isConnected) {
+                this.logger.error("SÍŤOVÁ CHYBA: Výchozí brána nebyla nalezena! Kabel je pravděpodobně odpojen.");
+                this.isConnected = false;
+            } else if (found && !this.isConnected) {
+                this.logger.info("SÍŤ OBNOVENA: Výchozí brána je opět dostupná.");
+                this.isConnected = true;
             }
-            if (isConnected) break;
-        }
 
-        if (!isConnected) {
-            this.logger.warn("VAROVÁNÍ: Není detekováno žádné síťové připojení! (Zkontrolujte síťový kabel)");
+            return found;
+        } catch (error) {
+            if (this.isConnected) {
+                this.logger.error("SÍŤOVÁ CHYBA: Nelze zjistit stav směrovací tabulky.");
+                this.isConnected = false;
+            }
+            return false;
         }
-
-        return isConnected;
     }
 
     /**

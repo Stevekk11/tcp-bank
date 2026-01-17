@@ -89,7 +89,7 @@ async function startServer() {
                 const errorMsg = "ER Není připojen síťový kabel (příkazy jsou blokovány)\r\n";
                 socket.write(errorMsg);
                 logger.error(`Příkaz zablokován pro ${socket.remoteAddress}: Žádná síť`);
-                return; // Ukončí zpracování, switch se nespustí
+                return; // Ukončí zpracování
             }
 
             const [command, ...args] = input.split(/\s+/);
