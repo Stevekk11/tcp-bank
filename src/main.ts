@@ -74,7 +74,6 @@ async function startServer() {
     const server = net.createServer((socket) => {
         const remoteInfo = `${socket.remoteAddress}:${socket.remotePort}`;
         logger.info(`Připojen klient: ${remoteInfo}`);
-        socket.write("Zadejte příkaz>>\r\n");
         socket.setTimeout(CONFIG.CLIENT_IDLE_TIMEOUT);
         socket.on('timeout', () => {
             logger.warn(`Klient ${remoteInfo} odpojen pro neaktivitu.`);
