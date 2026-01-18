@@ -76,6 +76,7 @@ async function startServer() {
         logger.info(`Připojen klient: ${remoteInfo}`);
         socket.setTimeout(CONFIG.CLIENT_IDLE_TIMEOUT);
         socket.on('timeout', () => {
+            socket.write('ER Odpojeno pro neaktivitu\r\n');
             logger.warn(`Klient ${remoteInfo} odpojen pro neaktivitu.`);
             socket.end();
         });
