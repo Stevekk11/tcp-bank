@@ -3,3 +3,4 @@ https://moodle.spsejecna.cz/mod/page/view.php?id=11554
 https://gist.github.com/tedmiston/5935757
 https://nodejs.org/api/net.html
 F:\Škola\Pv\Cviceni-3-4
+https://refactoring.guru/design-patterns/command

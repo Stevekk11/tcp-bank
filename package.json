@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "npx tsx src/main.ts",
     "build": "tsc",
-    "start": "node dist/main.js"
+    "start": "node dist/main.js",
+    "tunnel" : "npx localtunnel --port 65525 --subdomain tcp-bank"
   },
   "dependencies": {
     "@types/node": "^25.0.9",
